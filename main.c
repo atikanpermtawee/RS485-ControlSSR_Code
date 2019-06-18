@@ -83,8 +83,22 @@ void main(void)
         if((success == 1)&&(Address_ModBus == ID_Device))
         {
             success = 0;
+            char Buff_Chack[7];
             Flag_Value.Relay = Function_Control;
             Control_Relay();
+            
+            Buff_Chack[0] = Address_Device;
+            Buff_Chack[1] = Function_Code;
+            Buff_Chack[2] = ID_Device;
+            Buff_Chack[3] = Flag_Value.Relay;
+            
+            Chack_CRC = RTU_CalculateChecksum(&Buff_Chack,4);
+            EUSART_Write(Address_Device);
+            EUSART_Write(Function_Code);
+            EUSART_Write(ID_Device);
+            EUSART_Write(Flag_Value.Relay);
+            EUSART_Write(Chack_CRC);
+            EUSART_Write(Chack_CRC>>8);
         }
         
     }
