@@ -49,6 +49,7 @@
 void __interrupt() INTERRUPT_InterruptManager (void);
 void Chack_ID_Device(void);
 void Control_Relay(void);
+uint16_t RTU_CalculateChecksum(uint8_t *pData, int16_t length) ;
 void main(void)
 {
     // initialize the device
@@ -77,11 +78,15 @@ void main(void)
             Flag_Time.Time_1S = 0;
             Chack_ID_Device();
             Status_MCU_Toggle();
-            
-            
-            
-            Flag_Value.Relay = ~Flag_Value.Relay;
-        }  
+        } 
+        
+        if((success == 1)&&(Address_ModBus == ID_Device))
+        {
+            success = 0;
+            Flag_Value.Relay = Function_Control;
+            Control_Relay();
+        }
+        
     }
 }
 /**
@@ -128,6 +133,50 @@ void __interrupt() INTERRUPT_InterruptManager (void)
         else if(PIE1bits.RCIE == 1 && PIR1bits.RCIF == 1)
         {
             EUSART_RxDefaultInterruptHandler();
+            Buffer = EUSART_Read();
+            if(head == 0){
+                if(Buffer == Address_Device)
+                {
+                    Counter_Keep_data = 1;
+                    Keep_data[Counter_Keep_data] = Buffer;
+                    head = 1;
+                }
+            }else if(head == 1)
+            {
+                if(Buffer == Function_Code)
+                {
+                    Counter_Keep_data = 2;
+                    Keep_data[Counter_Keep_data] = Buffer;
+                    head = 2;
+                }
+            }else if(head == 2)
+            {
+                Keep_data[++Counter_Keep_data] = Buffer;   
+                if(Counter_Keep_data >= 6)
+                {
+                    char Buff_Data[6];
+                    unsigned int Cal_CRC;
+                    Buff_Data[0] = Keep_data[1];
+                    Buff_Data[1] = Keep_data[2];
+                    Buff_Data[2] = Keep_data[3];
+                    Buff_Data[3] = Keep_data[4];
+                    Buff_Data[4] = Keep_data[5];
+                    Buff_Data[5] = Keep_data[6];
+                    Cal_CRC = RTU_CalculateChecksum(&Buff_Data,4);
+                    Chack_Sum = (Keep_data[5]<<8)|Keep_data[6];
+                    if(Cal_CRC == Chack_Sum)
+                    {
+                        success = 1;
+                        Address_ModBus = Keep_data[3];
+                        Function_Control = Keep_data[4];
+                    }   
+                    head = 0;
+                }
+            }
+            else
+            {
+                head = 0;
+            }
         } 
         else
         {
@@ -173,4 +222,28 @@ void Control_Relay(void)
         Relay_B_SetHigh();
         Count_Value.Comman_Relay = 5; //count time on relay 500mS
     }
+}
+
+uint16_t RTU_CalculateChecksum(uint8_t *pData, int16_t length) 
+{ 
+    uint16_t crc = 0xFFFF; 
+    int8_t pos, i; 
+     
+    for(pos = 0; pos < length; pos++) 
+    { 
+        crc ^= (uint16_t)pData[pos]; 
+
+        for(i = 8; i != 0; i--) 
+        { 
+            if ((crc & 0x0001) != 0) 
+            { 
+                crc >>= 1; 
+                crc ^= 0xA001; 
+                 
+            } else { 
+                crc >>= 1; 
+            } 
+        } 
+    } 
+    return crc; 
 }
