@@ -77,6 +77,9 @@ void main(void)
             Flag_Time.Time_1S = 0;
             Chack_ID_Device();
             Status_MCU_Toggle();
+            
+            
+            
             Flag_Value.Relay = ~Flag_Value.Relay;
         }  
     }
