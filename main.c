@@ -83,7 +83,7 @@ void main(void)
         if((success == 1)&&(Address_ModBus == ID_Device))
         {
             success = 0;
-            char Buff_Chack[7];
+            char Buff_Chack[4];
             Flag_Value.Relay = Function_Control;
             Control_Relay();
             
@@ -109,35 +109,7 @@ void main(void)
 void __interrupt() INTERRUPT_InterruptManager (void)
 {
     // interrupt handler
-    if(INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1)
-    {
-        TMR0_ISR();
-        if(++Count_Time.Time_10ms >= 10)
-        {
-            Count_Time.Time_10ms = 0;
-            Flag_Time.Time_10ms = 1;
-            if(++Count_Time.Time_100ms >= 10)
-            {
-                Count_Time.Time_100ms = 0;
-                Flag_Time.Time_100ms = 1;
-                if(--Count_Value.Comman_Relay==0)
-                {
-                    Relay_A_SetLow();
-                    Relay_B_SetLow();
-                }
-                if(++Count_Time.Time_500ms >= 5)
-                {
-                    Count_Time.Time_500ms = 0;
-                    Flag_Time.Time_500ms = 1;
-                    if(++Count_Time.Time_1S >= 2)
-                    {
-                        Count_Time.Time_1S = 0;
-                        Flag_Time.Time_1S = 1;
-                    }
-                }
-            }
-        }
-    }
+    
     if(INTCONbits.PEIE == 1)
     {
         if(PIE1bits.TXIE == 1 && PIR1bits.TXIF == 1)
@@ -177,7 +149,7 @@ void __interrupt() INTERRUPT_InterruptManager (void)
                     Buff_Data[4] = Keep_data[5];
                     Buff_Data[5] = Keep_data[6];
                     Cal_CRC = RTU_CalculateChecksum(&Buff_Data,4);
-                    Chack_Sum = (Keep_data[5]<<8)|Keep_data[6];
+                    Chack_Sum = (Keep_data[6]<<8)|Keep_data[5];
                     if(Cal_CRC == Chack_Sum)
                     {
                         success = 1;
@@ -192,11 +164,36 @@ void __interrupt() INTERRUPT_InterruptManager (void)
                 head = 0;
             }
         } 
-        else
+    }
+    if(INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1)
+    {
+        TMR0_ISR();
+        if(++Count_Time.Time_10ms >= 10)
         {
-            //Unhandled Interrupt
+            Count_Time.Time_10ms = 0;
+            Flag_Time.Time_10ms = 1;
+            if(--Count_Value.Comman_Relay==0)
+            {
+                Relay_A_SetLow();
+                Relay_B_SetLow();
+            }
+            if(++Count_Time.Time_100ms >= 10)
+            {
+                Count_Time.Time_100ms = 0;
+                Flag_Time.Time_100ms = 1;
+                if(++Count_Time.Time_500ms >= 5)
+                {
+                    Count_Time.Time_500ms = 0;
+                    Flag_Time.Time_500ms = 1;
+                    if(++Count_Time.Time_1S >= 2)
+                    {
+                        Count_Time.Time_1S = 0;
+                        Flag_Time.Time_1S = 1;
+                    }
+                }
+            }
         }
-    }      
+    }
 }
 
 void Chack_ID_Device(void)
@@ -228,13 +225,13 @@ void Control_Relay(void)
     {
         Relay_A_SetHigh();
         Relay_B_SetLow(); 
-        Count_Value.Comman_Relay = 5; //count time on relay 500mS
+        Count_Value.Comman_Relay = 100; //count time on relay 100mS
     }
     else if(!Flag_Value.Relay)
     {
         Relay_A_SetLow();
         Relay_B_SetHigh();
-        Count_Value.Comman_Relay = 5; //count time on relay 500mS
+        Count_Value.Comman_Relay = 100; //count time on relay 100mS
     }
 }
 

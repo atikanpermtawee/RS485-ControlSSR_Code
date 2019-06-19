@@ -83,7 +83,6 @@ void FLASH_WriteWord(uint16_t flashAddr, uint16_t *ramBuf, uint16_t word)
     for (i=0; i<ERASE_FLASH_BLOCKSIZE; i++)
     {
         ramBuf[i] = FLASH_ReadWord((blockStartAddr+i));
-        CLRWDT();
     }
 
     // Write at offset
@@ -145,7 +144,6 @@ int8_t FLASH_WriteBlock(uint16_t writeAddr, uint16_t *flashWordArray)
 			NOP();
 		
 			writeAddr++;
-			CLRWDT();
 		}
 	}
 

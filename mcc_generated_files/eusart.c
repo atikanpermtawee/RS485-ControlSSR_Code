@@ -151,7 +151,6 @@ uint8_t EUSART_Read(void)
     
     while(0 == eusartRxCount)
     {
-        CLRWDT();
     }
 
     eusartRxLastError = eusartRxStatusBuffer[eusartRxTail];
@@ -172,7 +171,6 @@ void EUSART_Write(uint8_t txData)
 {
     while(0 == eusartTxBufferRemaining)
     {
-        CLRWDT();
     }
 
     if(0 == PIE1bits.TXIE)
