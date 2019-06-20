@@ -68,53 +68,55 @@ void main(void)
 
     // Disable the Peripheral Interrupts
     //INTERRUPT_PeripheralInterruptDisable();
-
+    LED_Green_LAT = 1;
+    LED_Red_LAT = 1;
     while (1)
     {
         // Add your application code
         if(Flag_Time.Time_1S)
         {
             Flag_Time.Time_1S = 0;
-            LED_Red_Toggle();
+            Chack_ID_Device();
         }
         
          
-        if((success == 1)&&(Address_ModBus == (ID_SSR1<<4|ID_Device)))
+        if((success == 1)&&(Address_ModBus == (ID_Device<<4|ID_SSR1)))
         {
             success = 0;
             char Buff_Chack[4];
             SSR1_LAT = Function_Control;
-            LED_Green_LAT = Function_Control;
+            LED_Red_LAT = !Function_Control;
             
             Buff_Chack[0] = Address_Device;
             Buff_Chack[1] = Function_Code;
-            Buff_Chack[2] = (ID_SSR1<<4|ID_Device);
+            Buff_Chack[2] = (ID_Device<<4|ID_SSR1);
             Buff_Chack[3] = Function_Control;
             
             Chack_CRC = RTU_CalculateChecksum(&Buff_Chack,4);
             EUSART_Write(Address_Device);
             EUSART_Write(Function_Code);
-            EUSART_Write((ID_SSR1<<4|ID_Device));
+            EUSART_Write((ID_Device<<4|ID_SSR1));
             EUSART_Write(Function_Control);
             EUSART_Write(Chack_CRC);
             EUSART_Write(Chack_CRC>>8);
             
-        }else if((success == 1)&&(Address_ModBus == (ID_SSR2<<4|ID_Device)))
+        }
+        if((success == 1)&&(Address_ModBus == (ID_Device<<4|ID_SSR2)))
         {
             success = 0;
             char Buff_Chack[4];
             SSR2_LAT = Function_Control;
-            LED_Yellow_LAT = Function_Control;
+            LED_Green_LAT = !Function_Control;
             
             Buff_Chack[0] = Address_Device;
             Buff_Chack[1] = Function_Code;
-            Buff_Chack[2] = (ID_SSR2<<4|ID_Device);
+            Buff_Chack[2] = (ID_Device<<4|ID_SSR2);
             Buff_Chack[3] = Function_Control;
             
             Chack_CRC = RTU_CalculateChecksum(&Buff_Chack,4);
             EUSART_Write(Address_Device);
             EUSART_Write(Function_Code);
-            EUSART_Write((ID_SSR2<<4|ID_Device));
+            EUSART_Write((ID_Device<<4|ID_SSR2));
             EUSART_Write(Function_Control);
             EUSART_Write(Chack_CRC);
             EUSART_Write(Chack_CRC>>8);
@@ -191,7 +193,7 @@ void __interrupt() INTERRUPT_InterruptManager (void)
                     Buff_Data[4] = Keep_data[5];
                     Buff_Data[5] = Keep_data[6];
                     Cal_CRC = RTU_CalculateChecksum(&Buff_Data,4);
-                    Chack_Sum = (Keep_data[5]<<8)|Keep_data[6];
+                    Chack_Sum = (Keep_data[6]<<8)|Keep_data[5];
                     if(Cal_CRC == Chack_Sum)
                     {
                         success = 1;
@@ -232,8 +234,17 @@ void Chack_ID_Device(void)
     {
         ID_Address_01 = 0;
     }
+    
+    if(ADD_2_GetValue()== 0)
+    {
+        ID_Address_02 = 1;
+    }
+    else if(ADD_2_GetValue() == 1)
+    {
+        ID_Address_02 = 0;
+    }
 
-    ID_Device = (ID_Address_01<<1)|ID_Address_00;
+    ID_Device = (ID_Address_02<<2)|(ID_Address_01<<1)|ID_Address_00;
 }
 
 uint16_t RTU_CalculateChecksum(uint8_t *pData, int16_t length) 

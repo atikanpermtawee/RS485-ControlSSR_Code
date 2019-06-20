@@ -65,22 +65,22 @@
 #define PULL_UP_ENABLED      1
 #define PULL_UP_DISABLED     0
 
-// get/set LED_Yellow aliases
-#define LED_Yellow_TRIS                 TRISAbits.TRISA2
-#define LED_Yellow_LAT                  LATAbits.LATA2
-#define LED_Yellow_PORT                 PORTAbits.RA2
-#define LED_Yellow_WPU                  WPUAbits.WPUA2
-#define LED_Yellow_ANS                  ANSELAbits.ANSA2
-#define LED_Yellow_SetHigh()            do { LATAbits.LATA2 = 1; } while(0)
-#define LED_Yellow_SetLow()             do { LATAbits.LATA2 = 0; } while(0)
-#define LED_Yellow_Toggle()             do { LATAbits.LATA2 = ~LATAbits.LATA2; } while(0)
-#define LED_Yellow_GetValue()           PORTAbits.RA2
-#define LED_Yellow_SetDigitalInput()    do { TRISAbits.TRISA2 = 1; } while(0)
-#define LED_Yellow_SetDigitalOutput()   do { TRISAbits.TRISA2 = 0; } while(0)
-#define LED_Yellow_SetPullup()          do { WPUAbits.WPUA2 = 1; } while(0)
-#define LED_Yellow_ResetPullup()        do { WPUAbits.WPUA2 = 0; } while(0)
-#define LED_Yellow_SetAnalogMode()      do { ANSELAbits.ANSA2 = 1; } while(0)
-#define LED_Yellow_SetDigitalMode()     do { ANSELAbits.ANSA2 = 0; } while(0)
+// get/set ADD_2 aliases
+#define ADD_2_TRIS                 TRISAbits.TRISA2
+#define ADD_2_LAT                  LATAbits.LATA2
+#define ADD_2_PORT                 PORTAbits.RA2
+#define ADD_2_WPU                  WPUAbits.WPUA2
+#define ADD_2_ANS                  ANSELAbits.ANSA2
+#define ADD_2_SetHigh()            do { LATAbits.LATA2 = 1; } while(0)
+#define ADD_2_SetLow()             do { LATAbits.LATA2 = 0; } while(0)
+#define ADD_2_Toggle()             do { LATAbits.LATA2 = ~LATAbits.LATA2; } while(0)
+#define ADD_2_GetValue()           PORTAbits.RA2
+#define ADD_2_SetDigitalInput()    do { TRISAbits.TRISA2 = 1; } while(0)
+#define ADD_2_SetDigitalOutput()   do { TRISAbits.TRISA2 = 0; } while(0)
+#define ADD_2_SetPullup()          do { WPUAbits.WPUA2 = 1; } while(0)
+#define ADD_2_ResetPullup()        do { WPUAbits.WPUA2 = 0; } while(0)
+#define ADD_2_SetAnalogMode()      do { ANSELAbits.ANSA2 = 1; } while(0)
+#define ADD_2_SetDigitalMode()     do { ANSELAbits.ANSA2 = 0; } while(0)
 
 // get/set LED_Green aliases
 #define LED_Green_TRIS                 TRISAbits.TRISA4

@@ -21,7 +21,7 @@ COUNT_VALUE Count_Value;
 //==============================================================================
 //==== Define Value Program ====================================================
 //==============================================================================
-unsigned char ID_Address_00,ID_Address_01,ID_Device;
+unsigned char ID_Address_00,ID_Address_01,ID_Address_02,ID_Device;
 unsigned char ID_SSR1 = 1;
 unsigned char ID_SSR2 = 2;
 //==============================================================================
@@ -35,7 +35,7 @@ unsigned int Chack_CRC;
 //==============================================================================
 //==== Address_Device ModBus 458 ===============================================
 //==============================================================================
-unsigned char Address_Device = 0x15;
+unsigned char Address_Device = 0x25;
 unsigned char Function_Code = 0x06; //Writing 
 unsigned char Address_ModBus;
 unsigned char Function_Control;
